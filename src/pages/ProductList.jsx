@@ -19,6 +19,21 @@ function ProductList() {
 
   const [loading, setLoading] = useState(true);
 
+  const [page, setPage] = useState(1);
+
+const itemsPerPage = 9;
+
+const totalPages = Math.ceil(
+  filtered.length / itemsPerPage
+);
+
+const start = (page - 1) * itemsPerPage;
+
+const currentProducts = filtered.slice(
+  start,
+  start + itemsPerPage
+);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -51,68 +66,87 @@ function ProductList() {
   };
 
   useEffect(() => {
-    let data = [...products];
+  let data = [...products];
 
-    if (category) {
-      data = data.filter(
-        (item) => item.category === category
-      );
-    }
+  if (category) {
+    data = data.filter(
+      (item) => item.category === category
+    );
+  }
 
-    if (minPrice) {
-      data = data.filter(
-        (item) => item.price >= Number(minPrice)
-      );
-    }
+  if (minPrice) {
+    data = data.filter(
+      (item) => item.price >= Number(minPrice)
+    );
+  }
 
-    if (maxPrice) {
-      data = data.filter(
-        (item) => item.price <= Number(maxPrice)
-      );
-    }
+  if (maxPrice) {
+    data = data.filter(
+      (item) => item.price <= Number(maxPrice)
+    );
+  }
 
-    if (selectedBrands.length > 0) {
-      data = data.filter((item) =>
-        selectedBrands.includes(item.brand)
-      );
-    }
+  if (selectedBrands.length > 0) {
+    data = data.filter((item) =>
+      selectedBrands.includes(item.brand)
+    );
+  }
 
-    setFiltered(data);
-  }, [
-    category,
-    minPrice,
-    maxPrice,
-    selectedBrands,
-    products,
-  ]);
+  setFiltered(data);
+  setPage(1); // reset page
+}, [category, minPrice, maxPrice, selectedBrands]);
 
   if (loading) return <h2>Loading...</h2>;
+return (
+  <div className="container">
+    <Filters
+      categories={categories}
+      category={category}
+      setCategory={setCategory}
+      minPrice={minPrice}
+      maxPrice={maxPrice}
+      setMinPrice={setMinPrice}
+      setMaxPrice={setMaxPrice}
+      brands={brands}
+      selectedBrands={selectedBrands}
+      handleBrand={handleBrand}
+    />
 
-  return (
-    <div className="container">
-      <Filters
-        categories={categories}
-        category={category}
-        setCategory={setCategory}
-        minPrice={minPrice}
-        maxPrice={maxPrice}
-        setMinPrice={setMinPrice}
-        setMaxPrice={setMaxPrice}
-        brands={brands}
-        selectedBrands={selectedBrands}
-        handleBrand={handleBrand}
-      />
+    <div className="grid-section">
 
       <div className="grid">
-        {filtered.map((product) => (
+        {currentProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      <div className="pagination">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Previous
+        </button>
+
+        <span>
+          {page} / {totalPages}
+        </span>
+
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+      </div>
+
     </div>
-  );
+  </div>
+);
 }
 
 export default ProductList;
