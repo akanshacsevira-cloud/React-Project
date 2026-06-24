@@ -12,7 +12,7 @@ function Filters({
 }) {
   return (
     <div className="filters">
-      <h3>Category</h3>
+      {/* <h3>Category</h3>
 
       <select
         value={category}
@@ -25,7 +25,7 @@ function Filters({
             {cat.name || cat.slug}
           </option>
         ))}
-      </select>
+      </select> */}
 
       <h3>Price</h3>
 
